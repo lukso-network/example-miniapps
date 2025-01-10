@@ -2405,9 +2405,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lukso/up-provider@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@lukso/up-provider@npm:0.2.2"
+"@lukso/up-provider@npm:^0.3.1":
+  version: 0.3.1
+  resolution: "@lukso/up-provider@npm:0.3.1"
   dependencies:
     "@mixer/postmessage-rpc": "npm:^1.1.4"
     "@types/debug": "npm:^4.1.12"
@@ -2418,7 +2418,7 @@ __metadata:
     lit: "npm:^3.2.1"
     pauseable: "npm:^0.3.2"
     uuid: "npm:^11.0.3"
-  checksum: 10c0/1580e06ec07145fe3d8979d605fdb280ed2f4b9dd1ba383b7039a74c6d2684abc8a3aa58297fabfe27b4d1566f754dab7378b27271c5b6a9ec6659e11ed1743a
+  checksum: 10c0/688e60ecfca92535ac4ce149c968c608ce62f0df9ea2c7baa537b7301aa24e8e2ceeb96a5a4e500e7db38747718109e3bac85c6425ad625b4bd16bf3d69315d6
   languageName: node
   linkType: hard
 
@@ -9430,7 +9430,7 @@ __metadata:
     "@eslint/compat": "npm:^1.2.4"
     "@eslint/eslintrc": "npm:^3.2.0"
     "@eslint/js": "npm:^9.17.0"
-    "@lukso/up-provider": "npm:^0.2.2"
+    "@lukso/up-provider": "npm:^0.3.1"
     "@lukso/web-components": "npm:^1.104.0"
     "@typescript-eslint/eslint-plugin": "npm:8.19.1"
     "@typescript-eslint/parser": "npm:8.19.1"
