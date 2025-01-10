@@ -78,13 +78,12 @@ watch(
       contextAccounts?.length > 0 &&
       (chainId === 42 || chainId === 4201)
 
-    if (contextAccounts.length > 0) {
-      const { profile: _profile }: ProfileQuery = await GqlProfile({
-        id: contextAccounts[0],
-      })
+    const { profile: _profile }: ProfileQuery = await GqlProfile({
+      id: contextAccounts[0] || '',
+    })
 
-      profile.value = _profile
-    }
+    profile.value = _profile
+    isLoaded.value = true
   }
 )
 
@@ -97,7 +96,7 @@ const maxAmount = 1000 // Maximum allowed value
 
 const address = computed(() => contextAccounts.value[0])
 
-const isLoaded = computed(() => address.value && profile.value)
+const isLoaded = ref(false)
 
 // Watch and validate input
 const validateAmount = () => {
