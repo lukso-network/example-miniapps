@@ -32,10 +32,19 @@ export default defineNuxtConfig({
       functionPrefix: 'Gql',
       documentPaths: ['./'],
       preferGETQueries: false,
-      codegen: true,
+      codegen: {
+        silent: false,
+        onlyOperationTypes: false,
+        useTypeImports: true,
+      },
       clients: {
-        default: {
+        mainnet: {
           host: 'https://envio.lukso-mainnet.universal.tech/v1/graphql',
+          queries: ['profile'],
+        },
+        testnet: {
+          host: 'https://envio.lukso-testnet.universal.tech/v1/graphql',
+          queries: ['profile'],
         },
       },
     },

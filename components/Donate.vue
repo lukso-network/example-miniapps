@@ -85,11 +85,33 @@ watch(
       accounts?.length > 0 &&
       contextAccounts?.length > 0 &&
       (chainId === 42 || chainId === 4201)
+  }
+)
 
+watch(
+  () =>
+    [chainId.value, contextAccounts.value] as [number, Array<`0x${string}`>],
+  async (
+    [chainId, contextAccounts]: [number, Array<`0x${string}`>],
+    [chainIdOld, contextAccountsOld]: [number, Array<`0x${string}`>]
+  ) => {
+    if (
+      !contextAccounts[0] ||
+      (chainId === chainIdOld && contextAccounts[0] === contextAccountsOld[0])
+    ) {
+      return
+    }
+    switch (chainId) {
+      case 42:
+        useGqlHost('https://envio.lukso-mainnet.universal.tech/v1/graphql')
+        break
+      case 4201:
+        useGqlHost('https://envio.lukso-testnet.universal.tech/v1/graphql')
+        break
+    }
     const { profile: _profile }: ProfileQuery = await GqlProfile({
-      id: contextAccounts[0] || '',
+      id: (contextAccounts[0] || '').toLowerCase(),
     })
-
     profile.value = _profile
     isLoaded.value = true
   }
