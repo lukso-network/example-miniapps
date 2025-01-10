@@ -11,14 +11,15 @@ const chainId = ref<number | null>(null);
 const accounts = ref<string[]>([]);
 const contextAccounts = ref<string[]>([]);
 const walletConnected = ref<boolean>(false);
+const web3 = ref<Web3 | null>(null);
 
 // Allocate the client up provider.
 let provider: SupportedProviders<EthExecutionAPI> | null = null;
 onMounted(() => {
   provider = createClientUPProvider();
-  const web3 = new Web3(provider as SupportedProviders<EthExecutionAPI>);
+  web3.value = new Web3(provider as SupportedProviders<EthExecutionAPI>);
   // Initially retrieve chainId and accounts
-  web3.eth
+  web3.value.eth
     ?.getChainId()
     .then((_chainId) => {
       chainId.value = Number(_chainId);
@@ -26,15 +27,15 @@ onMounted(() => {
         accounts.value.length > 0 && contextAccounts.value.length > 0;
     })
     .catch((error) => {
-      // Ignore error
+      console.warn(error)
     });
-  web3.eth
+  web3.value.eth
     ?.getAccounts()
     .then((_accounts) => {
       accounts.value = _accounts || [];
     })
     .catch((error) => {
-      // Ignore error
+      console.warn(error)
     });
   provider
     .request("up_contextAccounts", [])
@@ -42,7 +43,7 @@ onMounted(() => {
       contextAccounts.value = _accounts || [];
     })
     .catch((error) => {
-      // Ignore error
+      console.warn(error)
     });
   // Monitor accountsChanged and chainChanged events
   provider.on("accountsChanged", (_accounts: `0x${string}`[]) => {
@@ -83,6 +84,16 @@ const amount = ref(1);
 const minAmount = 0.25; // Minimum allowed value
 const maxAmount = 1000; // Maximum allowed value
 
+const address = computed(() => contextAccounts.value[0]);
+
+const profileAvatar = computed(() => {
+  return `https://avatars.dicebear.com/api/avataaars/${address.value}.svg`;
+});
+
+const name = computed(() => {
+  return 'Name';
+});
+
 // Watch and validate input
 const validateAmount = () => {
   if (amount.value < minAmount) {
@@ -97,7 +108,7 @@ const validateAmount = () => {
 // Optionally validate immediately on load or updates
 watch(amount, validateAmount);
 async function donate() {
-  web3.eth.sendTransaction(
+  web3.value?.eth.sendTransaction(
     {
       from: accounts.value[0],
       to: contextAccounts.value[0],
@@ -111,36 +122,45 @@ async function donate() {
 
 <template>
   <div
-    class="flex flex-col border-2 border-gray-300 rounded-lg p-5 bg-gray-100 shadow-lg text-center"
+    class="flex h-screen flex-col items-center justify-center rounded-8 border border-neutral-95 px-8"
   >
-    <h3 class="text-lg font-bold text-gray-800">
-      Donate LYX to<br />
-      <small class="text-gray-600">{{
-        contextAccounts.length > 0 ? contextAccounts[0] : "not connected"
-      }}</small>
-    </h3>
-    <div class="mt-4">
-      <label for="amount" class="block text-sm font-medium text-gray-700 mb-2"
-        >Enter Amount:</label
-      >
-      <input
-        id="amount"
-        type="number"
-        v-model.number="amount"
-        :min="minAmount"
-        :max="maxAmount"
-        step="1"
-        @input="validateAmount"
-        class="w-full p-2 border border-gray-300 rounded-lg mb-3 focus:ring focus:ring-blue-500 focus:outline-none"
-      />
-      <p v-if="error" class="text-red-500 text-sm">{{ error }}</p>
-    </div>
-    <button
-      :disabled="!walletConnected || !amount"
-      @click="donate"
-      class="w-full p-3 bg-green-500 text-white font-bold rounded-lg hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed transition"
+  <div class="heading-inter-17-semi-bold pb-4">Donate LYX to</div>
+
+  <lukso-profile
+      :profile-url="profileAvatar"
+      :profile-address="address"
+      size="medium"
+      has-identicon
+      class="mb-2"
     >
-      Donate {{ amount }} LYX
-    </button>
+    </lukso-profile>
+    <lukso-username
+      v-if="name"
+      :name="name"
+      :address="address"
+      size="medium"
+      max-width="300"
+    ></lukso-username>
+
+  <div class="w-full max-w-[400px]">
+    <lukso-input
+      :value="amount"
+      :min="minAmount"
+      :max="maxAmount"
+      :error="error"
+      placeholder="Enter Amount"
+      is-full-width
+      class="mb-4 mt-6"
+      @on-input="validateAmount"
+    ></lukso-input>
+
+    <lukso-button
+      variant="landing"
+      is-full-width
+
+      :disabled="!walletConnected || !amount ? true : undefined"
+      @click="donate"
+    >Donate LYX</lukso-button>
+  </div>
   </div>
 </template>
