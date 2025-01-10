@@ -43,7 +43,7 @@ onMounted(async () => {
   provider
     .request('up_contextAccounts', [])
     .then(_accounts => {
-      contextAccounts.value = _accounts || []
+      contextAccounts.value = (_accounts as string[]) || []
     })
     .catch(error => {
       console.warn(error)
