@@ -9,6 +9,9 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-11-01",
   devtools: { enabled: true },
   css: ["~/assets/styles/main.scss"],
+  modules: [
+    'nuxt-graphql-client'
+  ],
   postcss: {
     plugins: {
       tailwindcss: {},
@@ -23,4 +26,17 @@ export default defineNuxtConfig({
       },
     },
   },
+  ...({'graphql-client': {
+    watch: true,
+    autoImport: true,
+    functionPrefix: 'Gql',
+    documentPaths: ['./'],
+    preferGETQueries: false,
+    codegen: true,
+    clients: {
+      default: {
+        host: 'https://envio.lukso-mainnet.universal.tech/v1/graphql',
+      },
+    },
+  }} as any),
 });
