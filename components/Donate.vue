@@ -9,12 +9,20 @@ import Web3, {
 
 import type { ProfileQuery } from '@/.nuxt/gql/default'
 
+const MIN_AMOUNT = 0.25 // Minimum allowed value
+const MAX_AMOUNT = 1000 // Maximum allowed value
+
 const chainId = ref<number | null>(null)
 const accounts = ref<string[]>([])
 const contextAccounts = ref<string[]>([])
 const walletConnected = ref<boolean>(false)
 const web3 = ref<Web3 | null>(null)
 const profile = ref<ProfileQuery['profile'] | null>(null)
+const error = ref('') // Error message for validation feedback
+const amount = ref(1)
+const isLoaded = ref(false)
+
+const address = computed(() => contextAccounts.value[0])
 
 // Allocate the client up provider.
 let provider: SupportedProviders<EthExecutionAPI> | null = null
@@ -87,23 +95,12 @@ watch(
   }
 )
 
-const error = ref('') // Error message for validation feedback
-const amount = ref(1)
-
-// Validation limits
-const minAmount = 0.25 // Minimum allowed value
-const maxAmount = 1000 // Maximum allowed value
-
-const address = computed(() => contextAccounts.value[0])
-
-const isLoaded = ref(false)
-
 // Watch and validate input
 const validateAmount = () => {
-  if (amount.value < minAmount) {
-    error.value = `Amount must be at least ${minAmount} LYX.`
-  } else if (amount.value > maxAmount) {
-    error.value = `Amount cannot exceed ${maxAmount} LYX.`
+  if (amount.value < MIN_AMOUNT) {
+    error.value = `Amount must be at least ${MIN_AMOUNT} LYX.`
+  } else if (amount.value > MAX_AMOUNT) {
+    error.value = `Amount cannot exceed ${MAX_AMOUNT} LYX.`
   } else {
     error.value = '' // Clear error if valid
   }
@@ -150,8 +147,8 @@ async function donate() {
       <div class="w-full max-w-[400px]">
         <lukso-input
           :value="amount"
-          :min="minAmount"
-          :max="maxAmount"
+          :min="MIN_AMOUNT"
+          :max="MAX_AMOUNT"
           :error="error"
           placeholder="Enter Amount"
           is-full-width
