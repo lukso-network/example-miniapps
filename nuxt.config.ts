@@ -7,7 +7,7 @@ copyAssets('./public', assets)
 
 export default defineNuxtConfig({
   compatibilityDate: '2024-11-01',
-  devtools: { enabled: true },
+  devtools: { enabled: false },
   css: ['~/assets/styles/main.scss'],
   modules: ['nuxt-graphql-client'],
   postcss: {
