@@ -57,10 +57,10 @@ onMounted(async () => {
       console.warn(error)
     })
   // Monitor accountsChanged and chainChanged events
-  provider.on('accountsChanged', (_accounts: `0x${string}`[]) => {
+  provider.on('accountsChanged', (_accounts: Address[]) => {
     accounts.value = [..._accounts]
   })
-  provider.on('contextAccountsChanged', (_accounts: `0x${string}`[]) => {
+  provider.on('contextAccountsChanged', (_accounts: Address[]) => {
     contextAccounts.value = [..._accounts]
   })
   provider.on('chainChanged', (_chainId: number) => {
@@ -73,13 +73,13 @@ watch(
   () =>
     [chainId.value, accounts.value, contextAccounts.value] as [
       number,
-      Array<`0x${string}`>,
-      Array<`0x${string}`>
+      Array<Address>,
+      Array<Address>
     ],
   async ([chainId, accounts, contextAccounts]: [
     number,
-    Array<`0x${string}`>,
-    Array<`0x${string}`>
+    Array<Address>,
+    Array<Address>
   ]) => {
     walletConnected.value =
       accounts?.length > 0 &&
@@ -89,11 +89,10 @@ watch(
 )
 
 watch(
-  () =>
-    [chainId.value, contextAccounts.value] as [number, Array<`0x${string}`>],
+  () => [chainId.value, contextAccounts.value] as [number, Array<Address>],
   async (
-    [chainId, contextAccounts]: [number, Array<`0x${string}`>],
-    [chainIdOld, contextAccountsOld]: [number, Array<`0x${string}`>]
+    [chainId, contextAccounts]: [number, Array<Address>],
+    [chainIdOld, contextAccountsOld]: [number, Array<Address>]
   ) => {
     if (
       !contextAccounts[0] ||
