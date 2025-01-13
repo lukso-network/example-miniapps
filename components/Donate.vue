@@ -118,8 +118,11 @@ watch(
   }
 )
 
-// Watch and validate input
-const validateAmount = () => {
+const handleInput = (customEvent: CustomEvent) => {
+  const event = customEvent.detail.event
+  const input = event.target as HTMLInputElement
+  amount.value = Number.parseFloat(input.value)
+
   if (amount.value < MIN_AMOUNT) {
     error.value = `Amount must be at least ${MIN_AMOUNT} LYX.`
   } else if (amount.value > MAX_AMOUNT) {
@@ -130,8 +133,7 @@ const validateAmount = () => {
 }
 
 // Optionally validate immediately on load or updates
-watch(amount, validateAmount)
-async function donate() {
+const donate = async () => {
   web3.value?.eth.sendTransaction(
     {
       from: accounts.value[0],
@@ -176,7 +178,7 @@ async function donate() {
           placeholder="Enter Amount"
           is-full-width
           class="mb-4 mt-6"
-          @on-input="validateAmount"
+          @on-input="handleInput"
         ></lukso-input>
 
         <lukso-button
