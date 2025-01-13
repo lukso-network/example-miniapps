@@ -1,7 +1,7 @@
 fragment profile on Profile {
   name
   id
-  profileImages(order_by: { width: desc }) {
+  profileImage: profileImages(order_by: { width: desc }) {
     url: src
     width
     height

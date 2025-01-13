@@ -7,17 +7,16 @@ import Web3, {
   type EthExecutionAPI,
 } from 'web3'
 
-import type { ProfileQuery } from '@/.nuxt/gql/default'
-
 const MIN_AMOUNT = 0.25 // Minimum allowed value
 const MAX_AMOUNT = 1000 // Maximum allowed value
 
+const { getProfile } = useProfile()
 const chainId = ref<number | null>(null)
 const accounts = ref<string[]>([])
 const contextAccounts = ref<string[]>([])
 const walletConnected = ref<boolean>(false)
 const web3 = ref<Web3 | null>(null)
-const profile = ref<ProfileQuery['profile'] | null>(null)
+const profile = ref<Profile | null>(null)
 const error = ref('') // Error message for validation feedback
 const amount = ref(1)
 const isLoaded = ref(false)
@@ -47,6 +46,7 @@ onMounted(async () => {
     })
     .catch(error => {
       console.warn(error)
+      isLoaded.value = true
     })
   provider
     .request('up_contextAccounts', [])
@@ -89,17 +89,12 @@ watch(
 )
 
 watch(
-  () => [chainId.value, contextAccounts.value] as [number, Array<Address>],
-  async (
-    [chainId, contextAccounts]: [number, Array<Address>],
-    [chainIdOld, contextAccountsOld]: [number, Array<Address>]
-  ) => {
-    if (
-      !contextAccounts[0] ||
-      (chainId === chainIdOld && contextAccounts[0] === contextAccountsOld[0])
-    ) {
+  () => chainId.value,
+  async (chainId, chainIdOld) => {
+    if (chainId === chainIdOld) {
       return
     }
+
     switch (chainId) {
       case 42:
         useGqlHost('https://envio.lukso-mainnet.universal.tech/v1/graphql')
@@ -108,10 +103,17 @@ watch(
         useGqlHost('https://envio.lukso-testnet.universal.tech/v1/graphql')
         break
     }
-    const { profile: _profile }: ProfileQuery = await GqlProfile({
-      id: (contextAccounts[0] || '').toLowerCase(),
-    })
-    profile.value = _profile
+  }
+)
+
+watch(
+  () => contextAccounts.value,
+  async (contextAccounts, contextAccountsOld) => {
+    if (!contextAccounts[0] || contextAccounts[0] === contextAccountsOld[0]) {
+      return
+    }
+
+    profile.value = await getProfile(contextAccounts[0] as Address)
     isLoaded.value = true
   }
 )
@@ -150,7 +152,7 @@ async function donate() {
       <div class="heading-inter-17-semi-bold pb-4">Donate LYX to</div>
 
       <lukso-profile
-        :profile-url="profile?.profileImages?.[0]?.url"
+        :profile-url="profile?.profileImage?.[0]?.url"
         :profile-address="address"
         size="medium"
         has-identicon

@@ -24,6 +24,9 @@ export default defineNuxtConfig({
       },
     },
   },
+  imports: {
+    dirs: ['types/**', 'composables/**'],
+  },
   ssr: false,
   ...({
     'graphql-client': {
